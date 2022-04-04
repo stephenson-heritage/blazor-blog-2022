@@ -1,8 +1,15 @@
+using blazor_blog_2022.Data;
+using blazor_blog_2022.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using blazor_blog_2022.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddDbContextFactory<BlogContext>(
+	opt => opt.UseLazyLoadingProxies().UseSqlite(builder.Configuration.GetConnectionString("Blog"))
+);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -14,9 +21,9 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+	app.UseExceptionHandler("/Error");
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();

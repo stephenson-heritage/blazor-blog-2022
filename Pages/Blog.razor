@@ -1,5 +1,79 @@
-﻿<h3>Blog</h3>
+﻿@page "/blog"
+@using Models
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<BlogContext> CtxFactory
+
+<PageTitle>Blog</PageTitle>
+
+<h3>Blog</h3>
+
+<input type="text" placeholder="Title" @bind="title" />
+<input type="text" placeholder="Content" @bind="content" />
+<button @onclick="AddEntryAsync">Add Entry</button>
+
+@foreach (var entry in blog)
+{
+	<article class="blog-entry">
+		<h4>@entry.Title</h4>
+		<h5>@entry.TimePosted</h5>
+		<div class="blog-entry-content">@((MarkupString)entry.Content)</div>
+	</article>
+}
+
+
+
 
 @code {
 
+	private List<BlogEntry> blog = new List<BlogEntry>();
+
+	private string? title, content;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await updateBlogEntriesAsync();
+		@* var be = new BlogEntry { Title = "my first blog entry!", Content = "welcome to my blog!", TimePosted = DateTime.Now
+			};
+
+			blog.Add(be); *@
+	}
+
+	public async Task updateBlogEntriesAsync()
+	{
+		blog.Clear();
+		using var ctx = await CtxFactory.CreateDbContextAsync();
+
+		if (ctx.Blog != null)
+		{
+			blog.AddRange(
+			await ctx.Blog.OrderByDescending(be => be.TimePosted).ToListAsync()
+			);
+		}
+	}
+
+	private async void AddEntryAsync()
+	{
+		if (!string.IsNullOrWhiteSpace(title) && !string.IsNullOrWhiteSpace(content))
+		{
+			var be = new BlogEntry { Title = title, Content = content, TimePosted = DateTime.Now };
+
+
+			using var ctx = await CtxFactory.CreateDbContextAsync();
+			if (ctx.Blog != null)
+			{
+
+				await ctx.Blog.AddAsync(be);
+
+				if (await ctx.SaveChangesAsync() > 0)
+				{
+					await updateBlogEntriesAsync();
+					//blog.Add(be);
+
+					//blog.Sort();
+					title = "";
+					content = string.Empty;
+				}
+			}
+		}
+	}
 }
