@@ -13,14 +13,8 @@
 
 @foreach (var entry in blog)
 {
-	<article class="blog-entry">
-		<button @onclick="() =>DeleteAsync(entry)">Delete</button>
-		<h4>@entry.Title</h4>
-		<h5>@entry.TimePosted</h5>
-		<div class="blog-entry-content">@((MarkupString)entry.Content)</div>
-	</article>
+	<BlogEntryView Entry="@entry" OnDelete="@DeleteAsync" />
 }
-
 
 
 

@@ -1,0 +1,20 @@
+@page "/ScriptEx"
+@inject IJSRuntime JSInterop
+
+<PageTitle>Incoking Client Side JavaScript</PageTitle>
+
+<button @onclick="@SendMessage"></button>
+
+
+
+@code {
+
+	@* [Inject]
+		private IJSRuntime? JSRuntime1 {get;set;} *@
+
+	public async Task SendMessage()
+	{
+		bool result = await JSInterop.InvokeAsync<bool>("msg", "this is our message!");
+	}
+
+}
