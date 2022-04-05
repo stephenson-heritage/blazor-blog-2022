@@ -14,6 +14,7 @@
 @foreach (var entry in blog)
 {
 	<article class="blog-entry">
+		<button @onclick="() =>DeleteAsync(entry)">Delete</button>
 		<h4>@entry.Title</h4>
 		<h5>@entry.TimePosted</h5>
 		<div class="blog-entry-content">@((MarkupString)entry.Content)</div>
@@ -36,6 +37,18 @@
 			};
 
 			blog.Add(be); *@
+	}
+
+	public async Task DeleteAsync(BlogEntry entry)
+	{
+		using var ctx = await CtxFactory.CreateDbContextAsync();
+
+		if (ctx.Blog != null)
+		{
+			ctx.Blog.Remove(entry);
+			await ctx.SaveChangesAsync();
+			await updateBlogEntriesAsync();
+		}
 	}
 
 	public async Task updateBlogEntriesAsync()
